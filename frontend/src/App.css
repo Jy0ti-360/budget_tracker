@@ -1,0 +1,197 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+/* app.css */
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f9fafb;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+.container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1rem 2rem;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+h1, h2, h3 {
+  color: #222;
+  margin-bottom: 1rem;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  transition: background-color 0.3s ease;
+}
+
+button:focus {
+  outline: 2px solid #555;
+  outline-offset: 2px;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Primary button (blue) */
+.btn-primary {
+  background-color: #2563eb;
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #1e40af;
+}
+
+/* Success button (green) */
+.btn-success {
+  background-color: #16a34a;
+  color: white;
+}
+
+.btn-success:hover:not(:disabled) {
+  background-color: #15803d;
+}
+
+/* Warning button (yellow/orange) */
+.btn-warning {
+  background-color: #ca8a04;
+  color: white;
+}
+
+.btn-warning:hover:not(:disabled) {
+  background-color: #a16207;
+}
+
+/* Danger button (red) */
+.btn-danger {
+  background-color: #dc2626;
+  color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background-color: #b91c1c;
+}
+
+/* Neutral button (gray) */
+.btn-neutral {
+  background-color: #6b7280;
+  color: white;
+}
+
+.btn-neutral:hover:not(:disabled) {
+  background-color: #4b5563;
+}
+
+/* Layout utilities */
+.flex {
+  display: flex;
+  align-items: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.mb-6 {
+  margin-bottom: 1.5rem;
+}
+
+.mt-4 {
+  margin-top: 1rem;
+}
+
+.mt-6 {
+  margin-top: 1.5rem;
+}
+
+.space-x-4 > * + * {
+  margin-left: 1rem;
+}
+
+.space-y-2 > * + * {
+  margin-top: 0.5rem;
+}
+
+.rounded {
+  border-radius: 6px;
+}
+
+.border {
+  border: 1px solid #e5e7eb;
+}
+
+.p-2 {
+  padding: 0.5rem;
+}
+
+.p-4 {
+  padding: 1rem;
+}
+
+.shadow {
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Transactions list */
+.transactions-list li {
+  border: 1px solid #e5e7eb;
+  border-radius: 5px;
+  padding: 0.5rem 0.75rem;
+  font-weight: 500;
+}
+
+.transactions-list li.income {
+  color: #15803d; /* green */
+}
+
+.transactions-list li.expense {
+  color: #b91c1c; /* red */
+}
+
+/* Links */
+a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Center form container */
+.form-container {
+  max-width: 400px;
+  margin: 2rem auto;
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .container, .form-container {
+    margin: 1rem;
+    padding: 1rem;
+  }
+}
