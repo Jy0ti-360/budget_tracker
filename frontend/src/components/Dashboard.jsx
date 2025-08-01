@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as txnService from '../services/transactionService';
 import Transaction from './TransactionList';
 
-const DashboardContent = () => {
-  const [transactions, setTransactions] = useState([]);
+const DashboardContent = ({ transactions, summary, refreshData }) => {
   const [form, setForm] = useState({
     type: 'income',
     category: '',
@@ -11,85 +10,75 @@ const DashboardContent = () => {
     date: '',
     note: ''
   });
-  const [showAll, setShowAll] = useState(false);
-  const [summary, setSummary] = useState({ income: 0, expense: 0 });
+
   const [filter, setFilter] = useState({
     type: '',
     date: '',
     search: ''
   });
+
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 7;
 
-  const load = async () => {
-    const data = await txnService.fetchTransactions();
-    const normalized = data.map(txn => ({
-      ...txn,
-      date: typeof txn.date === 'string' ? txn.date : txn.date?.$date || txn.date
-    }));
-
-    setTransactions(normalized);
-  };
-
-  const loadSummary = async () => {
-    try {
-      const result = await txnService.fetchMonthlySummary();
-      setSummary(result);
-    } catch (err) {
-      console.error('Failed to fetch summary:', err);
-    }
-  };
-
+  // Reset page on filter change
   useEffect(() => {
-    load();
-    loadSummary();
-  }, []);
-
-  useEffect(() => {
-    setCurrentPage(1)
-  }, [filter])
+    setCurrentPage(1);
+  }, [filter]);
 
   const handleNew = async (e) => {
     e.preventDefault();
-    await txnService.createTransaction(form);
-    setForm({ type: '', category: '', amount: '', note: '', date: '' });
-    await load();
-    await loadSummary();
+
+    // Validate form inputs (optional but recommended)
+    if (!form.type || !form.category || !form.amount || !form.date) {
+      alert("Please fill all required fields");
+      return;
+    }
+
+    try {
+      await txnService.createTransaction(form);
+      setForm({ type: 'income', category: '', amount: '', note: '', date: '' });
+      await refreshData();
+    } catch (error) {
+      console.error("Failed to create transaction:", error);
+    }
   };
 
   const handleUpdate = async (id, updated) => {
-    await txnService.updateTransaction(id, updated);
-    await load();
-    await loadSummary();
+    try {
+      await txnService.updateTransaction(id, updated);
+      await refreshData();
+    } catch (error) {
+      console.error("Failed to update transaction:", error);
+    }
   };
 
   const handleDelete = async (id) => {
-    const confirmed = window.confirm("Are you sure to want to delete this transaction?");
-    if (confirmed) {
-      try {
-        await txnService.deleteTransaction(id);
-      } catch (error) {
-        console.error("Failed to delete the transaction : ", error);
-      }
+    const confirmed = window.confirm("Are you sure you want to delete this transaction?");
+    if (!confirmed) return;
+
+    try {
+      await txnService.deleteTransaction(id);
+      await refreshData();
+    } catch (error) {
+      console.error("Failed to delete transaction:", error);
     }
-    await load();
-    await loadSummary();
   };
 
   const getMonthYear = () => {
     const now = new Date();
-    const month = now.toLocaleString('default', { month: 'long' }); // e.g., "July"
-    const year = now.getFullYear(); // e.g., 2025
+    const month = now.toLocaleString('default', { month: 'long' });
+    const year = now.getFullYear();
     return `${month} ${year}`;
   };
 
+  // Filter transactions
   const filteredTransactions = transactions.filter(txn => {
     const matchesType = filter.type ? txn.type === filter.type : true;
     const matchesDate = filter.date ? txn.date?.slice(0, 10) === filter.date : true;
     const matchesSearch = filter.search
       ? Object.values(txn).some(val =>
-        String(val).toLowerCase().includes(filter.search.toLowerCase())
-      )
+          String(val).toLowerCase().includes(filter.search.toLowerCase())
+        )
       : true;
 
     return matchesType && matchesDate && matchesSearch;

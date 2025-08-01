@@ -1,17 +1,52 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import Header from './Header.jsx';
 import DashboardContent from '../components/Dashboard.jsx';
 import AnalyticsSection from '../components/AnalyticsSection.jsx';
 import Footer from './Footer.jsx';
 import useAuth from '../hooks/useAuth';
+import * as txnService from '../services/transactionService';
 
 const DashboardPage = () => {
-  const { logout, user } = useAuth();
+  const { user } = useAuth();
   const analyticsRef = useRef();
 
+  const [transactions, setTransactions] = useState([]);
+  const [summary, setSummary] = useState({ income: 0, expense: 0 });
+
+  const loadTransactions = async () => {
+    try {
+      const data = await txnService.fetchTransactions();
+      const normalized = data.map(txn => ({
+        ...txn,
+        date: typeof txn.date === 'string' ? txn.date : txn.date?.$date || txn.date
+      }));
+      setTransactions(normalized);
+    } catch (error) {
+      console.error("Failed to fetch transactions:", error);
+    }
+  };
+
+  const loadSummary = async () => {
+    try {
+      const result = await txnService.fetchMonthlySummary();
+      setSummary(result);
+    } catch (error) {
+      console.error("Failed to fetch summary:", error);
+    }
+  };
+
+  const refreshData = async () => {
+    await loadTransactions();
+    await loadSummary();
+  };
+
+  useEffect(() => {
+    refreshData();
+  }, []);
+
   const scrollToAnalytics = () => {
-    analyticsRef.current?.scrollIntoView({ behaviour: 'smooth' })
-  }
+    analyticsRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   return (
     <div className="w-full p-4 font-sans">
@@ -27,10 +62,19 @@ const DashboardPage = () => {
         </div>
       </header>
 
-      <DashboardContent />
+      <DashboardContent
+        transactions={transactions}
+        summary={summary}
+        refreshData={refreshData}
+      />
+
       <div ref={analyticsRef}>
-        <AnalyticsSection />
+        <AnalyticsSection
+          transactions={transactions}
+          summary={summary}
+        />
       </div>
+
       <Footer />
     </div>
   );
