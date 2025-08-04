@@ -28,7 +28,6 @@ const DashboardContent = ({ transactions, summary, refreshData }) => {
   const handleNew = async (e) => {
     e.preventDefault();
 
-    // Validate form inputs (optional but recommended)
     if (!form.type || !form.category || !form.amount || !form.date) {
       alert("Please fill all required fields");
       return;
@@ -71,7 +70,6 @@ const DashboardContent = ({ transactions, summary, refreshData }) => {
     return `${month} ${year}`;
   };
 
-  // Filter transactions
   const filteredTransactions = transactions.filter(txn => {
     const matchesType = filter.type ? txn.type === filter.type : true;
     const matchesDate = filter.date ? txn.date?.slice(0, 10) === filter.date : true;
@@ -211,7 +209,6 @@ const DashboardContent = ({ transactions, summary, refreshData }) => {
           />
         ))}
 
-        {/* Pagination Controls */}
         {totalPages > 1 && (
           <div className="flex justify-center gap-4 mt-4">
             <button
