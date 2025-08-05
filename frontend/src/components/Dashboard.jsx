@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import * as txnService from '../services/transactionService';
 import Transaction from './TransactionList';
+import useNotifier from '../hooks/useNotifier';
+import { ToastContainer } from 'react-toastify';
 
 const DashboardContent = ({ transactions, summary, refreshData }) => {
   const [form, setForm] = useState({
@@ -25,19 +27,23 @@ const DashboardContent = ({ transactions, summary, refreshData }) => {
     setCurrentPage(1);
   }, [filter]);
 
+  const { notifySuccess, notifyError, notifyWarning } = useNotifier();
+
   const handleNew = async (e) => {
     e.preventDefault();
 
     if (!form.type || !form.category || !form.amount || !form.date) {
-      alert("Please fill all required fields");
+      notifyWarning("Please fill all the required fields!");
       return;
     }
 
     try {
       await txnService.createTransaction(form);
+      notifySuccess("Transaction added!")
       setForm({ type: 'income', category: '', amount: '', note: '', date: '' });
       await refreshData();
     } catch (error) {
+      notifyError("Failed to add transaction!");
       console.error("Failed to create transaction:", error);
     }
   };
@@ -233,6 +239,7 @@ const DashboardContent = ({ transactions, summary, refreshData }) => {
           </div>
         )}
       </div>
+      <ToastContainer position="top-center" autoClose={3000} />
     </div>
   );
 };

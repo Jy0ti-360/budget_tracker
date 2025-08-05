@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useMemo } from 'react';
 import { Bar, Pie } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -9,14 +9,10 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import * as txnService from '../services/transactionService';
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, ArcElement, Tooltip, Legend);
 
-const AnalyticsSection = () => {
-  const [summary, setSummary] = useState({ income: 0, expense: 0 });
-  const [categorySummary, setCategorySummary] = useState({});
-
+const AnalyticsSection = ({ transactions }) => {
   const getCurrentMonthYear = () => {
     const now = new Date();
     return { month: now.getMonth(), year: now.getFullYear() };
@@ -28,35 +24,28 @@ const AnalyticsSection = () => {
     return date.getMonth() === month && date.getFullYear() === year;
   };
 
-  useEffect(() => {
-    const loadData = async () => {
-      const transactions = await txnService.fetchTransactions();
+  const { summary, categorySummary } = useMemo(() => {
+    const currentMonthTxns = transactions.filter(txn => txn.date && isSameMonthYear(txn.date));
 
-      const currentMonthTxns = transactions.filter(txn =>
-        txn.date && isSameMonthYear(txn.date)
-      );
+    const income = currentMonthTxns
+      .filter(txn => txn.type === 'income')
+      .reduce((acc, txn) => acc + Number(txn.amount), 0);
 
-      const income = currentMonthTxns
-        .filter(txn => txn.type === 'income')
-        .reduce((acc, txn) => acc + Number(txn.amount), 0);
+    const expense = currentMonthTxns
+      .filter(txn => txn.type === 'expense')
+      .reduce((acc, txn) => acc + Number(txn.amount), 0);
 
-      const expense = currentMonthTxns
-        .filter(txn => txn.type === 'expense')
-        .reduce((acc, txn) => acc + Number(txn.amount), 0);
+    const expenses = currentMonthTxns.filter(txn => txn.type === 'expense');
+    const categoryData = expenses.reduce((acc, txn) => {
+      acc[txn.category] = (acc[txn.category] || 0) + Number(txn.amount);
+      return acc;
+    }, {});
 
-      setSummary({ income, expense });
-
-      const expenses = currentMonthTxns.filter(txn => txn.type === 'expense');
-      const categoryData = expenses.reduce((acc, txn) => {
-        acc[txn.category] = (acc[txn.category] || 0) + Number(txn.amount);
-        return acc;
-      }, {});
-
-      setCategorySummary(categoryData);
+    return {
+      summary: { income, expense },
+      categorySummary: categoryData,
     };
-
-    loadData();
-  }, []);
+  }, [transactions]);
 
   const incomeExpenseData = {
     labels: ['Income', 'Expense'],

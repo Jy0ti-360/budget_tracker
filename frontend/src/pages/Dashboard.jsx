@@ -5,6 +5,8 @@ import AnalyticsSection from '../components/AnalyticsSection.jsx';
 import Footer from './Footer.jsx';
 import useAuth from '../hooks/useAuth';
 import * as txnService from '../services/transactionService';
+import MonthlyTrendChart from '../components/MonthlyTrendChart.jsx';
+import CashFlowChart from '../components/CashFlowChart.jsx';
 
 const DashboardPage = () => {
   const { user } = useAuth();
@@ -12,6 +14,7 @@ const DashboardPage = () => {
 
   const [transactions, setTransactions] = useState([]);
   const [summary, setSummary] = useState({ income: 0, expense: 0 });
+  const [loading, setLoading] = useState(false);
 
   const loadTransactions = async () => {
     try {
@@ -36,8 +39,14 @@ const DashboardPage = () => {
   };
 
   const refreshData = async () => {
-    await loadTransactions();
-    await loadSummary();
+    setLoading(true);
+    try {
+      await Promise.all([loadTransactions(), loadSummary()]);
+    } catch (error) {
+      console.error("Error refreshing data : ", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -47,6 +56,9 @@ const DashboardPage = () => {
   const scrollToAnalytics = () => {
     analyticsRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
+
+  const [range, setRange] = useState('daily');
+  const [count, setCount] = useState(7);
 
   return (
     <div className="w-full p-4 font-sans">
@@ -62,6 +74,13 @@ const DashboardPage = () => {
         </div>
       </header>
 
+      {loading && (
+        <div className="flex justify-center items-center py-4">
+          <div className="w-6 h-6 border-4 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+          <span className="ml-2 text-gray-600 font-medium">Refreshing data...</span>
+        </div>
+      )}
+
       <DashboardContent
         transactions={transactions}
         summary={summary}
@@ -73,6 +92,24 @@ const DashboardPage = () => {
           transactions={transactions}
           summary={summary}
         />
+
+        <div className='mt-8'>
+          <MonthlyTrendChart months={12} />
+        </div>
+
+        <div className="chart-container">
+          <select value={range} onChange={(e) => setRange(e.target.value)}>
+        <option value="daily">Daily</option>
+        <option value="weekly">Weekly</option>
+      </select>
+      <input
+        type="number"
+        value={count}
+        onChange={(e) => setCount(Number(e.target.value))}
+      />
+      <CashFlowChart range={range} count={count} />
+        </div>
+
       </div>
 
       <Footer />
