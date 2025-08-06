@@ -195,3 +195,17 @@ a:hover {
     padding: 1rem;
   }
 }
+
+@keyframes marquee-right {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-marquee-left {
+  animation: marquee-left 15s linear infinite;
+  white-space: nowrap;
+}

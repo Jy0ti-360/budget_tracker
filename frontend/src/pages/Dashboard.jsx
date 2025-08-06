@@ -43,7 +43,7 @@ const DashboardPage = () => {
     try {
       await Promise.all([loadTransactions(), loadSummary()]);
     } catch (error) {
-      console.error("Error refreshing data : ", error);
+      console.error("Error refreshing data:", error);
     } finally {
       setLoading(false);
     }
@@ -60,6 +60,12 @@ const DashboardPage = () => {
   const [range, setRange] = useState('daily');
   const [count, setCount] = useState(7);
 
+  const spentPercentage = summary.income > 0 ? (summary.expense / summary.income) * 100 : 0;
+
+  let bgColor = 'bg-yellow-100 text-yellow-900 border-yellow-400';
+  if (spentPercentage > 80) bgColor = 'bg-red-100 text-red-900 border-red-400';
+  else if (spentPercentage < 20) bgColor = 'bg-green-100 text-green-900 border-green-400';
+
   return (
     <div className="w-full p-4 font-sans">
       <Header onAnalyticsClick={scrollToAnalytics} />
@@ -71,6 +77,31 @@ const DashboardPage = () => {
           <div className="text-xl font-medium text-[#264653]">
             Welcome to the Budget Tracker App!
           </div>
+
+          {/* Marquee */}
+          <div className={`relative overflow-hidden whitespace-nowrap mt-4 border rounded-lg ${bgColor}`} style={{ height: '40px' }}>
+            <div
+              className="absolute animate-marquee inline-block px-4 py-2 font-semibold"
+              style={{
+                animation: 'marquee 12s linear infinite',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              You have spent <span className="font-bold">{spentPercentage.toFixed(2)}%</span> of your earnings so far.
+            </div>
+          </div>
+
+          {/* Inline animation keyframes */}
+          <style>{`
+            @keyframes marquee {
+              0% {
+                transform: translateX(100%);
+              }
+              100% {
+                transform: translateX(-100%);
+              }
+            }
+          `}</style>
         </div>
       </header>
 
@@ -93,23 +124,27 @@ const DashboardPage = () => {
           summary={summary}
         />
 
-        <div className='mt-8'>
+        <div className="mt-8">
           <MonthlyTrendChart months={12} />
         </div>
 
-        <div className="chart-container">
-          <select value={range} onChange={(e) => setRange(e.target.value)}>
-        <option value="daily">Daily</option>
-        <option value="weekly">Weekly</option>
-      </select>
-      <input
-        type="number"
-        value={count}
-        onChange={(e) => setCount(Number(e.target.value))}
-      />
-      <CashFlowChart range={range} count={count} />
+        <div className="chart-container mt-6">
+          <select
+            value={range}
+            onChange={(e) => setRange(e.target.value)}
+            className="border border-gray-300 rounded px-2 py-1 mr-2"
+          >
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+          </select>
+          <input
+            type="number"
+            value={count}
+            onChange={(e) => setCount(Number(e.target.value))}
+            className="border border-gray-300 rounded px-2 py-1 w-20"
+          />
+          <CashFlowChart range={range} count={count} />
         </div>
-
       </div>
 
       <Footer />
