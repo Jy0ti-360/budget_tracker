@@ -3,6 +3,7 @@ import * as txnService from '../services/transactionService';
 import Transaction from './TransactionList';
 import useNotifier from '../hooks/useNotifier';
 import { ToastContainer } from 'react-toastify';
+import { uploadAndExtractTransactions } from '../services/transactionService';
 
 const DashboardContent = ({ transactions, summary, refreshData }) => {
   const [form, setForm] = useState({
@@ -26,6 +27,10 @@ const DashboardContent = ({ transactions, summary, refreshData }) => {
   useEffect(() => {
     setCurrentPage(1);
   }, [filter]);
+
+  const [uploadFile, setUploadFile] = useState(null);
+  const [extractedData, setExtractedData] = useState([]);
+  const [previewMode, setPreviewMode] = useState(false);
 
   const { notifySuccess, notifyError, notifyWarning } = useNotifier();
 
@@ -81,8 +86,8 @@ const DashboardContent = ({ transactions, summary, refreshData }) => {
     const matchesDate = filter.date ? txn.date?.slice(0, 10) === filter.date : true;
     const matchesSearch = filter.search
       ? Object.values(txn).some(val =>
-          String(val).toLowerCase().includes(filter.search.toLowerCase())
-        )
+        String(val).toLowerCase().includes(filter.search.toLowerCase())
+      )
       : true;
 
     return matchesType && matchesDate && matchesSearch;
@@ -93,6 +98,47 @@ const DashboardContent = ({ transactions, summary, refreshData }) => {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
+  const handleFileChange = (e) => {
+    setUploadFile(e.target.files[0]);
+  };
+
+    const handleUpload = async () => {
+    if (!uploadFile) {
+      notifyWarning("Please select a file to upload.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', uploadFile);
+
+    try {
+      const response = await uploadAndExtractTransactions(formData);
+      setExtractedData(response.data);
+      setPreviewMode(true);
+      setUploadFile(null); // Reset file after successful upload
+      document.getElementById("fileInput").value = ""; // Reset file input
+    } catch (error) {
+      notifyError("Failed to extract data.");
+      console.error('Error extracting file', error);
+    }
+  };
+
+  const handleConfirmUpload = async () => {
+    try {
+      for (const txn of extractedData) {
+        await txnService.createTransaction(txn);
+      }
+      notifySuccess("Transactions saved!");
+      setPreviewMode(false);
+      setUploadFile(null);
+      setExtractedData([]);
+      await refreshData();
+    } catch (err) {
+      notifyError("Error saving transactions.");
+      console.error(err);
+    }
+  };
 
   return (
     <div className="dashboard px-8 py-5 max-w-[600px] mx-auto font-sans">
@@ -175,6 +221,73 @@ const DashboardContent = ({ transactions, summary, refreshData }) => {
           Add
         </button>
       </form>
+
+      <div className="mt-10">
+        <h2 className="text-lg font-bold mb-2">Upload Transaction File (Excel file)</h2>
+        <input
+          type="file"
+          id="fileInput"
+          accept=".xlsx, .xls"
+          onChange={handleFileChange}
+          className="mb-2"
+        />
+        <button
+          onClick={handleUpload}
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Extract Transactions
+        </button>
+      </div>
+
+      {previewMode && (
+        <div className="mt-6 border p-4 rounded bg-gray-50">
+          <h4 className="font-bold mb-4 text-lg">Preview Extracted Transactions</h4>
+          <table className="w-full text-sm table-auto border-collapse mb-4">
+            <thead>
+              <tr className="bg-gray-200">
+                <th>Type</th>
+                <th>Category</th>
+                <th>Amount</th>
+                <th>Date</th>
+                <th>Note</th>
+              </tr>
+            </thead>
+            <tbody>
+              {extractedData.map((txn, idx) => (
+                <tr key={idx}>
+                  {['type', 'category', 'amount', 'date', 'note'].map((field) => (
+                    <td key={field}>
+                      <input
+                        value={txn[field]}
+                        onChange={(e) => {
+                          const updated = [...extractedData];
+                          updated[idx][field] = e.target.value;
+                          setExtractedData(updated);
+                        }}
+                        className="w-full border border-gray-300 p-1"
+                      />
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div className="flex gap-4">
+            <button
+              onClick={handleConfirmUpload}
+              className="bg-green-500 text-white px-4 py-2 rounded"
+            >
+              Confirm and Save
+            </button>
+            <button
+              onClick={() => setPreviewMode(false)}
+              className="bg-gray-400 text-white px-4 py-2 rounded"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
 
       <h1 className="text-2xl py-4 font-bold mb-4 text-gray-800">Recent Transactions</h1>
 

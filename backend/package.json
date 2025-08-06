@@ -1,6 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
+  "type": "module",
   "description": "Backend of Budget tracker",
   "main": "index.js",
   "scripts": {
@@ -18,6 +19,10 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.16.4",
-    "nodemon": "^3.1.10"
+    "multer": "^2.0.2",
+    "nodemon": "^3.1.10",
+    "pdf-parse": "^1.1.1",
+    "tesseract.js": "^6.0.1",
+    "xlsx": "^0.18.5"
   }
 }

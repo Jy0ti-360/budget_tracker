@@ -25,3 +25,10 @@ export const fetchMonthlySummary = async () => {
   return res.data;
 };
 
+export const uploadAndExtractTransactions = async (formData) => {
+  const res = await api.post('/transactions/extract', formData, {
+    headers: { 'Content-Type': 'multipart/form-data'}
+  });
+  return res.data;
+}
+
