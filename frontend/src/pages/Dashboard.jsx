@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Header from './Header.jsx';
-import DashboardContent from '../components/Dashboard.jsx';
+import DashboardContent from '../components/DashboardContent.jsx';
 import AnalyticsSection from '../components/AnalyticsSection.jsx';
 import Footer from './Footer.jsx';
 import useAuth from '../hooks/useAuth';
@@ -67,19 +67,22 @@ const DashboardPage = () => {
   else if (spentPercentage < 20) bgColor = 'bg-green-100 text-green-900 border-green-400';
 
   return (
-    <div className="w-full p-4 font-sans">
+    <div className="w-full px-4 sm:px-6 md:px-8 py-4 font-sans">
       <Header onAnalyticsClick={scrollToAnalytics} />
+
       <header className="mb-8">
         <div className="text-center mt-5 space-y-2">
-          <div className="text-xl font-medium text-[#264653] mb-5 mt-10">
+          <div className="text-lg sm:text-xl font-medium text-[#264653] mb-4">
             Hello, {user?.name || 'User'}!
           </div>
-          <div className="text-xl font-medium text-[#264653]">
+          <div className="text-lg sm:text-xl font-medium text-[#264653]">
             Welcome to the Budget Tracker App!
           </div>
 
-          {/* Marquee */}
-          <div className={`relative overflow-hidden whitespace-nowrap mt-4 border rounded-lg ${bgColor}`} style={{ height: '40px' }}>
+          <div
+            className={`relative overflow-hidden whitespace-nowrap mt-4 border rounded-lg ${bgColor}`}
+            style={{ height: '40px' }}
+          >
             <div
               className="absolute animate-marquee inline-block px-4 py-2 font-semibold"
               style={{
@@ -91,7 +94,6 @@ const DashboardPage = () => {
             </div>
           </div>
 
-          {/* Inline animation keyframes */}
           <style>{`
             @keyframes marquee {
               0% {
@@ -119,16 +121,13 @@ const DashboardPage = () => {
       />
 
       <div ref={analyticsRef}>
-        <AnalyticsSection
-          transactions={transactions}
-          summary={summary}
-        />
+        <AnalyticsSection transactions={transactions} summary={summary} />
 
-        <div className="mt-8">
+        <div className="mt-8 px-2 sm:px-4">
           <MonthlyTrendChart months={12} />
         </div>
 
-        <div className="chart-container mt-6 max-w-4xl mx-auto">
+        <div className="mt-8 px-2 sm:px-4">
           <CashFlowChart
             range={range}
             count={count}
@@ -136,7 +135,6 @@ const DashboardPage = () => {
             onCountChange={(e) => setCount(Number(e.target.value))}
           />
         </div>
-
       </div>
 
       <Footer />
