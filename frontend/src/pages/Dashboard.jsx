@@ -128,23 +128,15 @@ const DashboardPage = () => {
           <MonthlyTrendChart months={12} />
         </div>
 
-        <div className="chart-container mt-6">
-          <select
-            value={range}
-            onChange={(e) => setRange(e.target.value)}
-            className="border border-gray-300 rounded px-2 py-1 mr-2"
-          >
-            <option value="daily">Daily</option>
-            <option value="weekly">Weekly</option>
-          </select>
-          <input
-            type="number"
-            value={count}
-            onChange={(e) => setCount(Number(e.target.value))}
-            className="border border-gray-300 rounded px-2 py-1 w-20"
+        <div className="chart-container mt-6 max-w-4xl mx-auto">
+          <CashFlowChart
+            range={range}
+            count={count}
+            onRangeChange={(e) => setRange(e.target.value)}
+            onCountChange={(e) => setCount(Number(e.target.value))}
           />
-          <CashFlowChart range={range} count={count} />
         </div>
+
       </div>
 
       <Footer />

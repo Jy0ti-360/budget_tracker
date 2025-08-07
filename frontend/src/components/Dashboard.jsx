@@ -141,7 +141,7 @@ const DashboardContent = ({ transactions, summary, refreshData }) => {
   };
 
   return (
-    <div className="dashboard px-8 py-5 max-w-[600px] mx-auto font-sans">
+    <div className="dashboard px-4 py-5 max-w-[600px] mx-auto font-sans">
       <h1 className="summary-title text-center text-xl mb-2 text-gray-800 font-bold">
         Transactions Summary of {getMonthYear()}
       </h1>
@@ -223,7 +223,7 @@ const DashboardContent = ({ transactions, summary, refreshData }) => {
       </form>
 
       <div className="mt-10">
-        <h2 className="text-lg font-bold mb-2">Upload Transaction File (Excel file)</h2>
+        <h2 className="text-lg font-bold mb-5">Upload Transaction File (Excel file)</h2>
         <input
           type="file"
           id="fileInput"
@@ -289,7 +289,7 @@ const DashboardContent = ({ transactions, summary, refreshData }) => {
         </div>
       )}
 
-      <h1 className="text-2xl py-4 font-bold mb-4 text-gray-800">Recent Transactions</h1>
+      <h1 className="text-2xl py-4 font-bold mt-10 mb-4 text-gray-800">Recent Transactions</h1>
 
       <div className="filter-section flex flex-wrap gap-4 mb-8">
         <select

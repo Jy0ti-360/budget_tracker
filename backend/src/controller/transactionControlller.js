@@ -108,6 +108,8 @@ export const getMonthlySummary = async (req, res) => {
   }
 };
 
+//Add the utc time to last hour minute.
+// Now it is taking as starting time take last time, so 5.5 hours will be deducted and exact date will come
 export const extractTransactionsFromUpload = async (req, res) => {
   try {
     const file = req.file;
@@ -171,9 +173,8 @@ export const extractTransactionsFromUpload = async (req, res) => {
         throw new Error(`Unsupported date format at row ${index + 2}`);
       }
 
-      // Add 1 day fix here
       const dateObj = new Date(yyyy, mm - 1, dd);
-      dateObj.setDate(dateObj.getDate() + 1);  // Add 1 day
+      dateObj.setDate(dateObj.getDate() + 1);
 
       const fixedYear = dateObj.getFullYear();
       const fixedMonth = dateObj.getMonth() + 1;

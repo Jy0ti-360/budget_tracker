@@ -11,7 +11,7 @@ import {
   Legend,
   Filler
 } from 'chart.js';
-import { getMonthlyTrend } from '../services/analyticsService'; // ✅ Use your service method
+import { getMonthlyTrend } from '../services/analyticsService';
 
 ChartJS.register(
   CategoryScale,
@@ -67,14 +67,21 @@ const MonthlyTrendChart = ({ months = 12 }) => {
     responsive: true,
     plugins: {
       legend: { position: 'top' },
-      title: { display: true, text: `Income vs Expense (last ${months} months)` }
+      title: { display: false }
     },
     scales: {
       y: { beginAtZero: true }
     }
   };
 
-  return <Line data={data} options={options} />;
+  return(
+    <div>
+        <h2 className='text-centre text-2xl font-semibold mt-4 mb-4' >
+            Income Vs Expense (last {months} months)
+        </h2>
+        <Line data={data} options={options} />;
+    </div>
+  );
 };
 
 export default MonthlyTrendChart;

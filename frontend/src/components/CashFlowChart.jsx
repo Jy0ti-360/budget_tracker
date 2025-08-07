@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getCashFlow } from '../services/analyticsService';
 import { Bar } from 'react-chartjs-2';
 
-const CashFlowChart = ({ range = 'daily', count = 7 }) => {
+const CashFlowChart = ({ range = 'daily', count = 7, onRangeChange, onCountChange }) => {
   const [data, setData] = useState({
     labels: [],
     inflow: [],
@@ -84,7 +84,29 @@ const CashFlowChart = ({ range = 'daily', count = 7 }) => {
 
   return (
     <div>
-      <h4>Cash Flow Chart ({range})</h4>
+      <h2 className="text-center text-2xl font-semibold mb-4">
+        Cash Flow Chart ({range})
+      </h2>
+
+      <div className="flex flex-wrap items-center justify-center gap-4 mb-6">
+        <select
+          value={range}
+          onChange={onRangeChange}
+          className="border border-gray-300 rounded px-3 py-1"
+        >
+          <option value="daily">Daily</option>
+          <option value="weekly">Weekly</option>
+        </select>
+
+        <input
+          type="number"
+          value={count}
+          onChange={onCountChange}
+          className="border border-gray-300 rounded px-3 py-2 w-24"
+          min={1}
+        />
+      </div>
+
       <Bar data={chartData} options={chartOptions} />
     </div>
   );

@@ -74,9 +74,9 @@ const AnalyticsSection = ({ transactions }) => {
 
   return (
     <div className="analytics-section mt-10 px-4 w-full">
-      <h2 className="text-xl font-bold text-gray-800 mb-6 text-center sm:text-left">
+      <h1 className="text-xl font-bold text-gray-800 mb-6 text-center sm:text-centre">
         Analytics Overview (This Month)
-      </h2>
+      </h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="p-4 bg-white shadow rounded w-full">
