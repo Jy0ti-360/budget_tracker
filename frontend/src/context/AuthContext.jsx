@@ -18,22 +18,35 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     try {
       const data = await authService.login(credentials);
+
+      if(!data.isVerfied){
+        alert("Your email is not verified. Please check your inbox.");
+        return;
+      }
+
       setUser(data);
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data));
       navigate('/dashboard');
     } catch (error) {
+      if(error.response?.data?.message === "Email not verified"){
+        alert("Email is not verified. Please verify your email before logging in.");
+      }else{
+        alert("Login failed. Check your credentials.");
+      }
       console.error('Login failed:', error);
       throw error;
     }
   };
 
   const register = async (form) => {
-    const data = await authService.register(form);
-    setUser(data);
-    localStorage.setItem('token', data.token);
-    localStorage.setItem('user', JSON.stringify(data));
-    navigate('/dashboard');
+    try {
+      const data = await authService.register(form);
+      return data;
+    } catch (error) {
+      console.error('Registration failed : ', error);
+      throw error;
+    }
   };
 
   const logout = () => {

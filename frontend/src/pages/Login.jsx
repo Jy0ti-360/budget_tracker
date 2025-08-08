@@ -20,6 +20,11 @@ const Login = () => {
           submitLabel="Log In"
           initialData={{ email: '', password: '' }}
         />
+        <div className="text-centre mt-3">
+          <Link to="/forgot-password" className="text-blue-600 text-sm hover:underline">
+            Forgot Password?
+          </Link>
+        </div>
       </div>
       <p className="mt-6 text-gray-700 text-sm sm:text-base max-w-xs sm:max-w-md mx-auto">
         Don’t have an account?{' '}

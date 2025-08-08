@@ -9,3 +9,8 @@ export const login = async (credentials) => {
   const res = await api.post('/auth/login', credentials);
   return res.data;
 };
+
+export const sendResetLink = async (email) => {
+  const res = await api.post('/auth/forgot-password', { email });
+  return res.data;
+};
