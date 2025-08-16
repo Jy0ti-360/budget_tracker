@@ -43,6 +43,7 @@ export const login = async (req, res) => {
         _id: user._id,
         name: user.name,
         email: user.email,
+        isVerified: user.isVerified,
         token: generateToken(user._id),
       });
     } else {

@@ -18,8 +18,9 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     try {
       const data = await authService.login(credentials);
+      console.log("Login response:", data);
 
-      if(!data.isVerfied){
+      if(!data.isVerified){
         alert("Your email is not verified. Please check your inbox.");
         return;
       }
